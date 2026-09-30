@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-09-30T19:39:50Z",
+  "runtime_seconds": 0.026,
+  "experiment_count": 2,
+  "success_count": 2,
+  "failure_count": 0,
+  "results": [
+    {
+      "id": "EXP_A001",
+      "status": "ok",
+      "engine": "uniform_without_replacement",
+      "trials": 2000,
+      "metrics": {
+        "adjacent_overlap_mean": 4.9719859929964985,
+        "adjacent_overlap_sd": 1.6904568702037066,
+        "expected_overlap": 5.0,
+        "overlap_delta": -0.02801400700350154,
+        "draw_sum_mean": 807.184,
+        "draw_sum_sd": 89.72775570580154
+      }
+    },
+    {
+      "id": "EXP_A002",
+      "status": "ok",
+      "engine": "continuous_state_with_skip",
+      "trials": 2000,
+      "metrics": {
+        "adjacent_overlap_mean": 4.992996498249124,
+        "adjacent_overlap_sd": 1.675217643341911,
+        "expected_overlap": 5.0,
+        "overlap_delta": -0.007003501750875607,
+        "draw_sum_mean": 810.3195,
+        "draw_sum_sd": 88.1621994947381
+      }
+    }
+  ]
+}
