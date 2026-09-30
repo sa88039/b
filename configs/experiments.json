@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "experiments": [
+    {
+      "id": "EXP_A001",
+      "engine": "uniform_without_replacement",
+      "population": 80,
+      "sample_size": 20,
+      "trials": 2000,
+      "seed": 104729
+    },
+    {
+      "id": "EXP_A002",
+      "engine": "continuous_state_with_skip",
+      "population": 80,
+      "sample_size": 20,
+      "trials": 2000,
+      "seed": 130363,
+      "max_skip": 63
+    }
+  ]
+}
