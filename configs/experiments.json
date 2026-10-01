@@ -1,67 +1,65 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "experiments": [
     {
-      "id": "EXP_A101",
-      "engine": "null_holdout_distribution",
+      "id": "EXP_B201",
+      "engine": "marginal_bias_power",
       "population": 80,
       "sample_size": 20,
-      "n": 203,
-      "reps": 30000,
-      "seed": 10101
+      "draws": 609,
+      "reps": 5000,
+      "bias_strength": 0.01,
+      "seed": 7201
     },
     {
-      "id": "EXP_A102",
-      "engine": "two_holdout_consistency",
+      "id": "EXP_B202",
+      "engine": "marginal_bias_power",
       "population": 80,
       "sample_size": 20,
-      "n": 203,
-      "reps": 20000,
-      "thresholds": [
-        5.05,
-        5.1,
-        5.15,
-        5.2
-      ],
-      "seed": 20202
+      "draws": 609,
+      "reps": 5000,
+      "bias_strength": 0.02,
+      "seed": 7202
     },
     {
-      "id": "EXP_A103",
-      "engine": "screening_false_positive",
+      "id": "EXP_B203",
+      "engine": "marginal_bias_power",
       "population": 80,
       "sample_size": 20,
-      "n": 203,
-      "reps": 2500,
-      "candidates": 25,
-      "seed": 30303
+      "draws": 609,
+      "reps": 5000,
+      "bias_strength": 0.04,
+      "seed": 7203
     },
     {
-      "id": "EXP_A104",
-      "engine": "screening_false_positive",
+      "id": "EXP_B204",
+      "engine": "position_bias_power",
       "population": 80,
       "sample_size": 20,
-      "n": 203,
-      "reps": 2000,
-      "candidates": 100,
-      "seed": 40404
+      "draws": 609,
+      "reps": 4000,
+      "bias_strength": 0.02,
+      "seed": 7204
     },
     {
-      "id": "EXP_A105",
-      "engine": "sequence_fingerprint",
+      "id": "EXP_B205",
+      "engine": "state_leak_power",
       "population": 80,
       "sample_size": 20,
-      "trials": 100000,
-      "max_skip": 0,
-      "seed": 50505
+      "draws": 609,
+      "reps": 5000,
+      "leak_strength": 0.01,
+      "seed": 7205
     },
     {
-      "id": "EXP_A106",
-      "engine": "sequence_fingerprint",
+      "id": "EXP_B206",
+      "engine": "state_leak_power",
       "population": 80,
       "sample_size": 20,
-      "trials": 100000,
-      "max_skip": 63,
-      "seed": 60606
+      "draws": 609,
+      "reps": 5000,
+      "leak_strength": 0.02,
+      "seed": 7206
     }
   ]
 }
