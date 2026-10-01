@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import math
+import os
 import random
 import statistics
 import time
@@ -12,6 +14,26 @@ ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "configs" / "experiments.json"
 RESULTS = ROOT / "results"
 HISTORY = RESULTS / "history"
+STATE = RESULTS / "runner_state.json"
+
+
+def work_hash() -> str:
+    h = hashlib.sha256()
+    h.update(CONFIG.read_bytes())
+    h.update(Path(__file__).read_bytes())
+    return h.hexdigest()
+
+
+def should_skip_scheduled_run(current_hash: str) -> bool:
+    if os.environ.get("GITHUB_EVENT_NAME") != "schedule":
+        return False
+    if not STATE.exists():
+        return False
+    try:
+        state = json.loads(STATE.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+    return state.get("last_successful_work_hash") == current_hash
 
 
 def hypergeom_pmf(population: int, success: int, draws: int) -> tuple[list[int], list[float]]:
@@ -147,6 +169,16 @@ def main() -> int:
     started = time.time()
     RESULTS.mkdir(parents=True, exist_ok=True)
     HISTORY.mkdir(parents=True, exist_ok=True)
+
+    current_hash = work_hash()
+    if should_skip_scheduled_run(current_hash):
+        print(json.dumps({
+            "status": "no_new_work",
+            "reason": "same successful research batch already completed",
+            "work_hash": current_hash[:12],
+        }))
+        return 0
+
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
     experiments = config.get("experiments", [])
     results: list[dict[str, Any]] = []
@@ -184,6 +216,15 @@ def main() -> int:
         json.dumps({"generated_utc": payload["generated_utc"], "failures": failures}, indent=2),
         encoding="utf-8",
     )
+    if not failures:
+        STATE.write_text(
+            json.dumps({
+                "last_successful_work_hash": current_hash,
+                "completed_utc": payload["generated_utc"],
+                "experiment_count": payload["experiment_count"],
+            }, indent=2),
+            encoding="utf-8",
+        )
     print(json.dumps({
         "experiment_count": payload["experiment_count"],
         "success_count": payload["success_count"],
