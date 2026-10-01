@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import json
 import math
-import os
 import random
 import statistics
 import time
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -16,92 +14,141 @@ RESULTS = ROOT / "results"
 HISTORY = RESULTS / "history"
 
 
-@dataclass
-class Metrics:
-    mean: float
-    stdev: float
-    minimum: float
-    maximum: float
+def hypergeom_pmf(population: int, success: int, draws: int) -> tuple[list[int], list[float]]:
+    lo = max(0, draws - (population - success))
+    hi = min(draws, success)
+    xs = list(range(lo, hi + 1))
+    den = math.comb(population, draws)
+    ws = [
+        math.comb(success, x) * math.comb(population - success, draws - x) / den
+        for x in xs
+    ]
+    return xs, ws
 
 
-def draw_uniform_without_replacement(rng: random.Random, population: int, sample_size: int) -> list[int]:
-    return rng.sample(range(1, population + 1), sample_size)
+def simulate_holdout_means(rng: random.Random, n: int, reps: int, population: int, sample_size: int) -> list[float]:
+    xs, ws = hypergeom_pmf(population, sample_size, sample_size)
+    means: list[float] = []
+    for _ in range(reps):
+        values = rng.choices(xs, weights=ws, k=n)
+        means.append(statistics.fmean(values))
+    return means
 
 
-def overlap(a: list[int], b: list[int]) -> int:
-    return len(set(a).intersection(b))
-
-
-def summarize(values: list[float]) -> Metrics:
-    if not values:
-        return Metrics(0.0, 0.0, 0.0, 0.0)
-    return Metrics(
-        mean=statistics.fmean(values),
-        stdev=statistics.pstdev(values) if len(values) > 1 else 0.0,
-        minimum=min(values),
-        maximum=max(values),
-    )
+def quantile(values: list[float], q: float) -> float:
+    s = sorted(values)
+    idx = min(len(s) - 1, max(0, int(round(q * (len(s) - 1)))))
+    return s[idx]
 
 
 def run_experiment(exp: dict[str, Any]) -> dict[str, Any]:
     exp_id = str(exp["id"])
     engine = str(exp["engine"])
-    population = int(exp["population"])
-    sample_size = int(exp["sample_size"])
-    trials = int(exp.get("trials", 1000))
     seed = int(exp.get("seed", 1))
-
-    if not (1 <= sample_size <= population):
-        raise ValueError("sample_size must be between 1 and population")
-    if trials < 2:
-        raise ValueError("trials must be >= 2")
-
     rng = random.Random(seed)
-    draws: list[list[int]] = []
 
-    for _ in range(trials):
-        if engine == "uniform_without_replacement":
-            current = draw_uniform_without_replacement(rng, population, sample_size)
-        elif engine == "continuous_state_with_skip":
-            max_skip = int(exp.get("max_skip", 63))
-            for _ in range(rng.randrange(max_skip + 1)):
-                rng.random()
-            current = draw_uniform_without_replacement(rng, population, sample_size)
-        else:
-            raise ValueError(f"unknown engine: {engine}")
-        draws.append(current)
+    population = int(exp.get("population", 80))
+    sample_size = int(exp.get("sample_size", 20))
+    expected = sample_size * sample_size / population
 
-    overlaps = [overlap(draws[i - 1], draws[i]) for i in range(1, len(draws))]
-    sums = [sum(d) for d in draws]
-    overlap_metrics = summarize([float(x) for x in overlaps])
-    sum_metrics = summarize([float(x) for x in sums])
-
-    expected_overlap = (sample_size * sample_size) / population
-
-    return {
-        "id": exp_id,
-        "status": "ok",
-        "engine": engine,
-        "trials": trials,
-        "metrics": {
-            "adjacent_overlap_mean": overlap_metrics.mean,
-            "adjacent_overlap_sd": overlap_metrics.stdev,
-            "expected_overlap": expected_overlap,
-            "overlap_delta": overlap_metrics.mean - expected_overlap,
-            "draw_sum_mean": sum_metrics.mean,
-            "draw_sum_sd": sum_metrics.stdev
+    if engine == "null_holdout_distribution":
+        n = int(exp.get("n", 203))
+        reps = int(exp.get("reps", 20000))
+        means = simulate_holdout_means(rng, n, reps, population, sample_size)
+        return {
+            "id": exp_id,
+            "status": "ok",
+            "engine": engine,
+            "metrics": {
+                "n": n,
+                "reps": reps,
+                "expected": expected,
+                "mean": statistics.fmean(means),
+                "p90": quantile(means, 0.90),
+                "p95": quantile(means, 0.95),
+                "p975": quantile(means, 0.975),
+                "p99": quantile(means, 0.99),
+            },
         }
-    }
+
+    if engine == "two_holdout_consistency":
+        n = int(exp.get("n", 203))
+        reps = int(exp.get("reps", 15000))
+        thresholds = [float(x) for x in exp.get("thresholds", [5.05, 5.10, 5.15, 5.20])]
+        a = simulate_holdout_means(rng, n, reps, population, sample_size)
+        b = simulate_holdout_means(rng, n, reps, population, sample_size)
+        both = {}
+        for th in thresholds:
+            both[str(th)] = sum(x >= th and y >= th for x, y in zip(a, b)) / reps
+        return {
+            "id": exp_id,
+            "status": "ok",
+            "engine": engine,
+            "metrics": {"n": n, "reps": reps, "both_holdouts_ge": both},
+        }
+
+    if engine == "screening_false_positive":
+        n = int(exp.get("n", 203))
+        reps = int(exp.get("reps", 3000))
+        candidates = int(exp.get("candidates", 50))
+        means = simulate_holdout_means(rng, n, reps * candidates, population, sample_size)
+        maxima = [
+            max(means[i * candidates:(i + 1) * candidates])
+            for i in range(reps)
+        ]
+        return {
+            "id": exp_id,
+            "status": "ok",
+            "engine": engine,
+            "metrics": {
+                "n": n,
+                "reps": reps,
+                "candidates": candidates,
+                "max_mean_avg": statistics.fmean(maxima),
+                "max_p95": quantile(maxima, 0.95),
+                "max_p99": quantile(maxima, 0.99),
+            },
+        }
+
+    if engine == "sequence_fingerprint":
+        trials = int(exp.get("trials", 100000))
+        max_skip = int(exp.get("max_skip", 0))
+        prev: set[int] | None = None
+        overlaps: list[int] = []
+        sums: list[int] = []
+        for _ in range(trials):
+            for _ in range(rng.randrange(max_skip + 1) if max_skip > 0 else 0):
+                rng.random()
+            cur = rng.sample(range(1, population + 1), sample_size)
+            sums.append(sum(cur))
+            cs = set(cur)
+            if prev is not None:
+                overlaps.append(len(prev & cs))
+            prev = cs
+        return {
+            "id": exp_id,
+            "status": "ok",
+            "engine": engine,
+            "metrics": {
+                "trials": trials,
+                "max_skip": max_skip,
+                "overlap_mean": statistics.fmean(overlaps),
+                "overlap_sd": statistics.pstdev(overlaps),
+                "sum_mean": statistics.fmean(sums),
+                "sum_sd": statistics.pstdev(sums),
+                "expected_overlap": expected,
+            },
+        }
+
+    raise ValueError(f"unknown engine: {engine}")
 
 
 def main() -> int:
     started = time.time()
     RESULTS.mkdir(parents=True, exist_ok=True)
     HISTORY.mkdir(parents=True, exist_ok=True)
-
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
     experiments = config.get("experiments", [])
-
     results: list[dict[str, Any]] = []
     failures: list[dict[str, Any]] = []
 
@@ -110,42 +157,39 @@ def main() -> int:
         try:
             results.append(run_experiment(exp))
         except Exception as exc:
-            failure = {
+            failures.append({
                 "time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                 "experiment": exp_id,
                 "error_type": type(exc).__name__,
                 "error": str(exc),
-                "retry_count": 0
-            }
-            failures.append(failure)
+                "retry_count": 0,
+            })
             results.append({"id": exp_id, "status": "failed"})
 
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "runtime_seconds": round(time.time() - started, 3),
         "experiment_count": len(experiments),
-        "success_count": sum(1 for r in results if r.get("status") == "ok"),
+        "success_count": sum(r.get("status") == "ok" for r in results),
         "failure_count": len(failures),
-        "results": results
+        "results": results,
     }
 
     stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
-    (RESULTS / "latest.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    (HISTORY / f"{stamp}.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    (RESULTS / "failure_report.json").write_text(json.dumps({
-        "generated_utc": payload["generated_utc"],
-        "failures": failures
-    }, indent=2), encoding="utf-8")
-
+    body = json.dumps(payload, indent=2)
+    (RESULTS / "latest.json").write_text(body, encoding="utf-8")
+    (HISTORY / f"{stamp}.json").write_text(body, encoding="utf-8")
+    (RESULTS / "failure_report.json").write_text(
+        json.dumps({"generated_utc": payload["generated_utc"], "failures": failures}, indent=2),
+        encoding="utf-8",
+    )
     print(json.dumps({
         "experiment_count": payload["experiment_count"],
         "success_count": payload["success_count"],
         "failure_count": payload["failure_count"],
-        "runtime_seconds": payload["runtime_seconds"]
+        "runtime_seconds": payload["runtime_seconds"],
     }))
-
-    # Per design, individual experiment failures do not fail the whole batch.
     return 0
 
 
