@@ -1,22 +1,67 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "experiments": [
     {
-      "id": "EXP_A001",
-      "engine": "uniform_without_replacement",
+      "id": "EXP_A101",
+      "engine": "null_holdout_distribution",
       "population": 80,
       "sample_size": 20,
-      "trials": 2000,
-      "seed": 104729
+      "n": 203,
+      "reps": 30000,
+      "seed": 10101
     },
     {
-      "id": "EXP_A002",
-      "engine": "continuous_state_with_skip",
+      "id": "EXP_A102",
+      "engine": "two_holdout_consistency",
       "population": 80,
       "sample_size": 20,
-      "trials": 2000,
-      "seed": 130363,
-      "max_skip": 63
+      "n": 203,
+      "reps": 20000,
+      "thresholds": [
+        5.05,
+        5.1,
+        5.15,
+        5.2
+      ],
+      "seed": 20202
+    },
+    {
+      "id": "EXP_A103",
+      "engine": "screening_false_positive",
+      "population": 80,
+      "sample_size": 20,
+      "n": 203,
+      "reps": 2500,
+      "candidates": 25,
+      "seed": 30303
+    },
+    {
+      "id": "EXP_A104",
+      "engine": "screening_false_positive",
+      "population": 80,
+      "sample_size": 20,
+      "n": 203,
+      "reps": 2000,
+      "candidates": 100,
+      "seed": 40404
+    },
+    {
+      "id": "EXP_A105",
+      "engine": "sequence_fingerprint",
+      "population": 80,
+      "sample_size": 20,
+      "trials": 100000,
+      "max_skip": 0,
+      "seed": 50505
+    },
+    {
+      "id": "EXP_A106",
+      "engine": "sequence_fingerprint",
+      "population": 80,
+      "sample_size": 20,
+      "trials": 100000,
+      "max_skip": 63,
+      "seed": 60606
     }
   ]
 }
