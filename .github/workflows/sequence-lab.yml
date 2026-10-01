@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -37,20 +39,52 @@ jobs:
       - name: Commit result checkpoint
         shell: bash
         run: |
+          set -euo pipefail
           git config user.name "sequence-lab-bot"
           git config user.email "sequence-lab-bot@users.noreply.github.com"
           git add results/
+
           if git diff --cached --quiet; then
             echo "No result changes."
-          else
-            git commit -m "chore: update experiment checkpoint"
-            git push
+            exit 0
           fi
 
+          git commit -m "chore: update experiment checkpoint"
+
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              echo "Checkpoint push succeeded."
+              exit 0
+            fi
+
+            echo "Push attempt ${attempt} hit a concurrent remote update; reconciling..."
+            git fetch origin main
+
+            # If source/config/workflow changed after this run started, do not
+            # publish stale results. The new source push will trigger a fresh run.
+            SOURCE_CHANGES="$(git diff --name-only "${GITHUB_SHA}" origin/main -- src configs .github/workflows/sequence-lab.yml || true)"
+            if [ -n "${SOURCE_CHANGES}" ]; then
+              echo "Research source changed during this run; skipping stale repo checkpoint."
+              echo "${SOURCE_CHANGES}"
+              exit 0
+            fi
+
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "Unable to reconcile checkpoint cleanly; preserving results as artifact."
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+
+          echo "Checkpoint push retries exhausted; preserving results as artifact."
+          exit 0
+
       - name: Upload result artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sequence-lab-results
+          name: sequence-lab-results-${{ github.run_id }}
           path: |
             results/latest.json
             results/failure_report.json
