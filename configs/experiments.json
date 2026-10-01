@@ -1,65 +1,11 @@
 {
   "schema_version": 3,
   "experiments": [
-    {
-      "id": "EXP_B201",
-      "engine": "marginal_bias_power",
-      "population": 80,
-      "sample_size": 20,
-      "draws": 609,
-      "reps": 5000,
-      "bias_strength": 0.01,
-      "seed": 7201
-    },
-    {
-      "id": "EXP_B202",
-      "engine": "marginal_bias_power",
-      "population": 80,
-      "sample_size": 20,
-      "draws": 609,
-      "reps": 5000,
-      "bias_strength": 0.02,
-      "seed": 7202
-    },
-    {
-      "id": "EXP_B203",
-      "engine": "marginal_bias_power",
-      "population": 80,
-      "sample_size": 20,
-      "draws": 609,
-      "reps": 5000,
-      "bias_strength": 0.04,
-      "seed": 7203
-    },
-    {
-      "id": "EXP_B204",
-      "engine": "position_bias_power",
-      "population": 80,
-      "sample_size": 20,
-      "draws": 609,
-      "reps": 4000,
-      "bias_strength": 0.02,
-      "seed": 7204
-    },
-    {
-      "id": "EXP_B205",
-      "engine": "state_leak_power",
-      "population": 80,
-      "sample_size": 20,
-      "draws": 609,
-      "reps": 5000,
-      "leak_strength": 0.01,
-      "seed": 7205
-    },
-    {
-      "id": "EXP_B206",
-      "engine": "state_leak_power",
-      "population": 80,
-      "sample_size": 20,
-      "draws": 609,
-      "reps": 5000,
-      "leak_strength": 0.02,
-      "seed": 7206
-    }
+    {"id":"EXP_C301","engine":"sequence_fingerprint","population":80,"sample_size":20,"trials":200000,"max_skip":0,"seed":8301},
+    {"id":"EXP_C302","engine":"sequence_fingerprint","population":80,"sample_size":20,"trials":200000,"max_skip":1,"seed":8302},
+    {"id":"EXP_C303","engine":"sequence_fingerprint","population":80,"sample_size":20,"trials":200000,"max_skip":8,"seed":8303},
+    {"id":"EXP_C304","engine":"sequence_fingerprint","population":80,"sample_size":20,"trials":200000,"max_skip":64,"seed":8304},
+    {"id":"EXP_C305","engine":"two_holdout_consistency","population":80,"sample_size":20,"n":203,"reps":30000,"thresholds":[5.05,5.10,5.15,5.20],"seed":8305},
+    {"id":"EXP_C306","engine":"screening_false_positive","population":80,"sample_size":20,"n":203,"reps":5000,"candidates":100,"seed":8306}
   ]
 }
