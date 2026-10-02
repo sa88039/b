@@ -23,6 +23,7 @@ def work_hash() -> str:
     h = hashlib.sha256()
     h.update(CONFIG.read_bytes())
     h.update(Path(__file__).read_bytes())
+    h.update((ROOT / "src" / "composite_lab.py").read_bytes())
     return h.hexdigest()
 
 
