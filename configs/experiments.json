@@ -1,145 +1,37 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "experiments": [
     {
-      "id": "EXP_C701",
+      "id": "EXP_C801",
       "engine": "composite_pipeline",
       "trials": 15000,
-      "seed": 10701,
-      "spec": {
-        "rng_a": "family_01",
-        "mapper": "swap_remove"
-      }
-    },
-    {
-      "id": "EXP_C702",
-      "engine": "composite_pipeline",
-      "trials": 15000,
-      "seed": 10702,
-      "spec": {
-        "rng_a": "family_02",
-        "mapper": "fisher_yates"
-      }
-    },
-    {
-      "id": "EXP_C703",
-      "engine": "composite_pipeline",
-      "trials": 15000,
-      "seed": 10703,
-      "spec": {
-        "rng_a": "family_03",
-        "mapper": "rejection"
-      }
-    },
-    {
-      "id": "EXP_C704",
-      "engine": "composite_pipeline",
-      "trials": 15000,
-      "seed": 10704,
-      "spec": {
-        "rng_a": "family_04",
-        "mapper": "swap_remove"
-      }
-    },
-    {
-      "id": "EXP_C705",
-      "engine": "composite_pipeline",
-      "trials": 15000,
-      "seed": 10705,
-      "spec": {
-        "rng_a": "family_05",
-        "mapper": "fisher_yates"
-      }
-    },
-    {
-      "id": "EXP_C706",
-      "engine": "composite_pipeline",
-      "trials": 15000,
-      "seed": 10706,
+      "seed": 10801,
       "spec": {
         "rng_a": "family_06",
-        "mapper": "rejection"
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 0
       }
     },
     {
-      "id": "EXP_C707",
+      "id": "EXP_C802",
       "engine": "composite_pipeline",
       "trials": 15000,
-      "seed": 10707,
+      "seed": 10802,
       "spec": {
-        "rng_a": "family_07",
-        "mapper": "swap_remove"
+        "rng_a": "family_06",
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 7
       }
     },
     {
-      "id": "EXP_C708",
+      "id": "EXP_C803",
       "engine": "composite_pipeline",
       "trials": 15000,
-      "seed": 10708,
-      "spec": {
-        "rng_a": "family_08",
-        "mapper": "fisher_yates"
-      }
-    },
-    {
-      "id": "EXP_C709",
-      "engine": "composite_pipeline",
-      "trials": 15000,
-      "seed": 10709,
-      "spec": {
-        "rng_a": "family_09",
-        "mapper": "rejection"
-      }
-    },
-    {
-      "id": "EXP_C710",
-      "engine": "composite_pipeline",
-      "trials": 15000,
-      "seed": 10710,
-      "spec": {
-        "rng_a": "family_10",
-        "mapper": "swap_remove"
-      }
-    },
-    {
-      "id": "EXP_C711",
-      "engine": "composite_pipeline",
-      "trials": 15000,
-      "seed": 10711,
-      "spec": {
-        "rng_a": "family_11",
-        "mapper": "fisher_yates"
-      }
-    },
-    {
-      "id": "EXP_C712",
-      "engine": "composite_pipeline",
-      "trials": 20000,
-      "seed": 10712,
-      "spec": {
-        "rng_a": "family_01",
-        "rng_b": "family_09",
-        "mapper": "fisher_yates",
-        "max_skip": 31
-      }
-    },
-    {
-      "id": "EXP_C713",
-      "engine": "composite_pipeline",
-      "trials": 18000,
-      "seed": 10713,
-      "spec": {
-        "rng_a": "family_03",
-        "rng_b": "family_10",
-        "mapper": "rejection",
-        "background": 3
-      }
-    },
-    {
-      "id": "EXP_C714",
-      "engine": "composite_pipeline",
-      "trials": 18000,
-      "seed": 10714,
+      "seed": 10803,
       "spec": {
         "rng_a": "family_06",
         "rng_b": "family_11",
@@ -149,30 +41,223 @@
       }
     },
     {
-      "id": "EXP_C715",
+      "id": "EXP_C804",
       "engine": "composite_pipeline",
-      "trials": 16000,
-      "seed": 10715,
+      "trials": 15000,
+      "seed": 10804,
       "spec": {
-        "rng_a": "family_04",
-        "rng_b": "family_07",
+        "rng_a": "family_06",
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 31
+      }
+    },
+    {
+      "id": "EXP_C805",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10805,
+      "spec": {
+        "rng_a": "family_06",
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 63
+      }
+    },
+    {
+      "id": "EXP_C806",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10806,
+      "spec": {
+        "rng_a": "family_06",
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
+        "max_skip": 15
+      }
+    },
+    {
+      "id": "EXP_C807",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10807,
+      "spec": {
+        "rng_a": "family_11",
+        "rng_b": "family_06",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 15
+      }
+    },
+    {
+      "id": "EXP_C808",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10808,
+      "spec": {
+        "rng_a": "family_06",
+        "rng_b": "family_11",
         "mapper": "fisher_yates",
-        "reseed_every": 101,
+        "reseed_every": 203,
+        "max_skip": 15
+      }
+    },
+    {
+      "id": "EXP_C809",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10809,
+      "spec": {
+        "rng_a": "family_06",
+        "rng_b": "family_11",
+        "mapper": "rejection",
+        "reseed_every": 203,
+        "max_skip": 15
+      }
+    },
+    {
+      "id": "EXP_C810",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10810,
+      "spec": {
+        "rng_a": "family_06",
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 15,
+        "background": 1
+      }
+    },
+    {
+      "id": "EXP_C811",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10811,
+      "spec": {
+        "rng_a": "family_06",
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 15,
+        "background": 3
+      }
+    },
+    {
+      "id": "EXP_C812",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10812,
+      "spec": {
+        "rng_a": "family_06",
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 15,
         "background": 5
       }
     },
     {
-      "id": "EXP_C716",
+      "id": "EXP_C813",
       "engine": "composite_pipeline",
       "trials": 15000,
-      "seed": 10716,
+      "seed": 10813,
       "spec": {
-        "rng_a": "family_02",
-        "rng_b": "family_08",
-        "mapper": "rejection",
+        "rng_a": "family_04",
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
         "reseed_every": 203,
-        "max_skip": 63,
-        "background": 3
+        "max_skip": 15
+      }
+    },
+    {
+      "id": "EXP_C814",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10814,
+      "spec": {
+        "rng_a": "family_07",
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 15
+      }
+    },
+    {
+      "id": "EXP_C815",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10815,
+      "spec": {
+        "rng_a": "family_04",
+        "rng_b": "family_07",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 15
+      }
+    },
+    {
+      "id": "EXP_C816",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10816,
+      "spec": {
+        "rng_a": "family_11",
+        "mapper": "fisher_yates",
+        "reseed_every": 203,
+        "max_skip": 15
+      }
+    },
+    {
+      "id": "EXP_C817",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10817,
+      "spec": {
+        "rng_a": "family_07",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 15
+      }
+    },
+    {
+      "id": "EXP_C818",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10818,
+      "spec": {
+        "rng_a": "family_04",
+        "mapper": "swap_remove",
+        "reseed_every": 203,
+        "max_skip": 15
+      }
+    },
+    {
+      "id": "EXP_C819",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10819,
+      "spec": {
+        "rng_a": "family_06",
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
+        "reseed_every": 101,
+        "max_skip": 15
+      }
+    },
+    {
+      "id": "EXP_C820",
+      "engine": "composite_pipeline",
+      "trials": 15000,
+      "seed": 10820,
+      "spec": {
+        "rng_a": "family_06",
+        "rng_b": "family_11",
+        "mapper": "swap_remove",
+        "reseed_every": 406,
+        "max_skip": 15
       }
     }
   ]
