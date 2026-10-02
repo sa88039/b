@@ -10,6 +10,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from composite_lab import simulate_pipeline
+
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "configs" / "experiments.json"
 RESULTS = ROOT / "results"
@@ -130,6 +132,17 @@ def run_experiment(exp: dict[str, Any]) -> dict[str, Any]:
                 "max_p95": quantile(maxima, 0.95),
                 "max_p99": quantile(maxima, 0.99),
             },
+        }
+
+    if engine == "composite_pipeline":
+        trials = int(exp.get("trials", 50000))
+        spec = dict(exp.get("spec", {}))
+        metrics = simulate_pipeline(spec, trials, seed)
+        return {
+            "id": exp_id,
+            "status": "ok",
+            "engine": engine,
+            "metrics": metrics,
         }
 
     if engine == "sequence_fingerprint":
