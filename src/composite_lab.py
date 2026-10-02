@@ -35,7 +35,8 @@ class UIntRNG:
         while made < k:
             x = self.next_uint()
             take = min(self.bits, k - made)
-            out |= (x & ((1 << take) - 1)) << made
+            piece = (x >> (self.bits - take)) & ((1 << take) - 1)
+            out = (out << take) | piece
             made += take
         return out
 
