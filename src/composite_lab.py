@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import math
 import random
 from typing import Callable, Protocol
 
@@ -290,8 +291,23 @@ def simulate_pipeline(spec: dict, trials: int, seed: int) -> dict:
     background = int(spec.get("background", 0))
     rng_a = make_rng(family_a, seed)
     rng_b = make_rng(family_b, seed + 1) if family_b else None
-    prev = None
-    overlaps, sums, position_sums = [], [], [0] * SAMPLE_SIZE
+
+    recent_sets: list[set[int]] = []
+    overlap_sums = [0.0] * 5
+    overlap_counts = [0] * 5
+    sums: list[int] = []
+    position_sums = [0] * SAMPLE_SIZE
+    freq = [0] * (POPULATION + 1)
+    inversion_total = 0
+    ascent_total = 0
+    gap_cv_total = 0.0
+    same_position_total = 0
+    same_position_pairs = 0
+    prev_ordered: list[int] | None = None
+
+    flat_prev: int | None = None
+    corr_n = 0
+    corr_sx = corr_sy = corr_sxx = corr_syy = corr_sxy = 0.0
 
     for t in range(trials):
         if reseed_every and t and t % reseed_every == 0:
@@ -301,7 +317,6 @@ def simulate_pipeline(spec: dict, trials: int, seed: int) -> dict:
 
         for _ in range(background):
             rng_a.random()
-
         if max_skip:
             for _ in range(rng_a.randrange(max_skip + 1)):
                 rng_a.random()
@@ -309,21 +324,95 @@ def simulate_pipeline(spec: dict, trials: int, seed: int) -> dict:
         carrier = rng_a
         if rng_b and rng_b.getrandbits(1) == 1:
             carrier = rng_b
-
         cur = MAPPERS[mapper](carrier)
+        cs = set(cur)
+
         sums.append(sum(cur))
         for i, x in enumerate(cur):
             position_sums[i] += x
+            freq[x] += 1
 
-        cs = set(cur)
-        if prev is not None:
-            overlaps.append(len(prev & cs))
-        prev = cs
+        for lag_idx, old_set in enumerate(recent_sets[:5]):
+            overlap_sums[lag_idx] += len(cs & old_set)
+            overlap_counts[lag_idx] += 1
+
+        inversion_total += sum(
+            1
+            for i in range(SAMPLE_SIZE)
+            for j in range(i + 1, SAMPLE_SIZE)
+            if cur[i] > cur[j]
+        )
+        ascent_total += sum(cur[i] < cur[i + 1] for i in range(SAMPLE_SIZE - 1))
+
+        ordered = sorted(cur)
+        gaps = [ordered[i + 1] - ordered[i] for i in range(SAMPLE_SIZE - 1)]
+        gap_mean = sum(gaps) / len(gaps)
+        if gap_mean:
+            gap_var = sum((g - gap_mean) ** 2 for g in gaps) / len(gaps)
+            gap_cv_total += math.sqrt(gap_var) / gap_mean
+
+        if prev_ordered is not None:
+            same_position_total += sum(a == b for a, b in zip(prev_ordered, cur))
+            same_position_pairs += 1
+        prev_ordered = cur
+
+        for x in cur:
+            if flat_prev is not None:
+                fx = float(flat_prev)
+                fy = float(x)
+                corr_n += 1
+                corr_sx += fx
+                corr_sy += fy
+                corr_sxx += fx * fx
+                corr_syy += fy * fy
+                corr_sxy += fx * fy
+            flat_prev = x
+
+        recent_sets.insert(0, cs)
+        if len(recent_sets) > 5:
+            recent_sets.pop()
+
+    overlap_lags = {
+        str(i + 1): (
+            overlap_sums[i] / overlap_counts[i] if overlap_counts[i] else None
+        )
+        for i in range(5)
+    }
+    expected_freq = trials * SAMPLE_SIZE / POPULATION
+    freq_chi_square = sum(
+        ((freq[x] - expected_freq) ** 2) / expected_freq
+        for x in range(1, POPULATION + 1)
+    )
+    corr_num = corr_n * corr_sxy - corr_sx * corr_sy
+    corr_den = math.sqrt(
+        max(0.0, corr_n * corr_sxx - corr_sx * corr_sx)
+        * max(0.0, corr_n * corr_syy - corr_sy * corr_sy)
+    )
+    flat_lag1_corr = corr_num / corr_den if corr_den else 0.0
 
     return {
         "trials": trials,
-        "overlap_mean": sum(overlaps) / len(overlaps),
+        "overlap_mean": overlap_lags["1"],
+        "overlap_lags": overlap_lags,
         "sum_mean": sum(sums) / len(sums),
         "position_means": [x / trials for x in position_sums],
-        "layers": sum(bool(x) for x in [family_a, family_b, mapper, reseed_every, max_skip, background]),
+        "same_position_mean": (
+            same_position_total / same_position_pairs if same_position_pairs else 0.0
+        ),
+        "flat_lag1_corr": flat_lag1_corr,
+        "freq_chi_square": freq_chi_square,
+        "inversion_mean": inversion_total / trials,
+        "ascent_mean": ascent_total / trials,
+        "gap_cv_mean": gap_cv_total / trials,
+        "layers": sum(
+            bool(x)
+            for x in [
+                family_a,
+                family_b,
+                mapper,
+                reseed_every,
+                max_skip,
+                background,
+            ]
+        ),
     }
