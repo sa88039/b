@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "configs" / "experiments.json"
 LATEST = ROOT / "results" / "latest.json"
 
-BATCH_RE = re.compile(r"EXP_C(\d{3})")
+BATCH_RE = re.compile(r"EXP_C([0-9]+)")
 
 
 def current_batch(config: dict) -> int:
