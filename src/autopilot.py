@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "configs" / "experiments.json"
 LATEST = ROOT / "results" / "latest.json"
+MAX_GENERIC_BATCH = 28
 
 BATCH_RE = re.compile(r"EXP_C([0-9]+)")
 
@@ -139,6 +140,13 @@ def main() -> int:
     current = current_batch(config)
     if current < 9:
         print(f"autopilot: batch C{current} is below autonomous handoff point")
+        return 0
+
+    if current >= MAX_GENERIC_BATCH:
+        print(
+            f"autopilot: reached generic batch cap C{MAX_GENERIC_BATCH}; "
+            "waiting for private scoring/pruning before another batch"
+        )
         return 0
 
     nxt = current + 1
