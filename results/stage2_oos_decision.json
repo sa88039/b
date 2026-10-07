@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "stage": "stage2_chronological_oos",
+  "status": "completed",
+  "source_head": "0a9ad469025d70191db225f7eda6590907772df5",
+  "corpus": {
+    "draw_count": 609,
+    "days": 3,
+    "draws_per_day": 203,
+    "chronological": true
+  },
+  "protocol": {
+    "selection": "day_1_only",
+    "oos": "days_2_and_3",
+    "random_expected_overlap": 5,
+    "multiple_testing": "applied_across_survivor_families"
+  },
+  "decision": {
+    "survivor_count": 0,
+    "promoted": [],
+    "rejected": [
+      "family_01",
+      "family_03",
+      "family_05",
+      "family_09",
+      "family_11"
+    ],
+    "targeted_c30": false,
+    "reason": "No survivor exceeded corrected random expectation stably across independent OOS days."
+  },
+  "privacy": "Raw target draws, fingerprints, candidate ranking details, and wagering rationale intentionally omitted."
+}
