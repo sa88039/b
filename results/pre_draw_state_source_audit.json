@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "source_head": "d4f130c23b79c2957739b0dabf500a05b369b565",
+  "scope": "pre_draw_observable_state_source_audit",
+  "evidence": {
+    "stage2_decision": "results/stage2_oos_decision.json",
+    "hypothesis_audit": "results/post_stage2_hypothesis_audit.json",
+    "public_corpus_checked": "water89453/bingo-hot artifacts/last_fetch 2025-08-18..20",
+    "observed_fields": {
+      "drawTerm": "deterministic issue index, not an independent state covariate",
+      "dDate": "placeholder 0001-01-01T00:00:00 in checked records",
+      "sellAmount": "null",
+      "totalWinners": "null",
+      "totalAmount": "null",
+      "result_fields": "draw-result fields are unavailable before the event and excluded"
+    }
+  },
+  "decision": {
+    "family": "pre_draw_observable_state_leak",
+    "testable_with_current_corpus": false,
+    "reason": "No genuine pre-event machine or state covariate is present in the verified corpus.",
+    "current_search_space_exhausted": true,
+    "c30": false,
+    "reopen_gate": "Only reopen if a genuinely pre-event observable source is obtained, such as machine or ball-set identifier, pre-event device state, or another timestamped covariate demonstrably published before the event."
+  }
+}
