@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "source_head": "96db6eca7335fca2908fad43494d65fb15348d76",
+  "scope": "post_stage2_hypothesis_class_audit",
+  "evidence": {
+    "stage2_decision": "results/stage2_oos_decision.json",
+    "audited_history": "C10-C29 plus earlier mechanism/power batches",
+    "closed_classes": [
+      "fixed-seed RNG-family matching across implemented family_01..family_11",
+      "implemented mapper variants: swap_remove, fisher_yates, rejection",
+      "generic reseed cadence, skip/background consumption, and two-family mixtures",
+      "selection/survivor replication without independent OOS evidence"
+    ],
+    "prior_attempted_but_not_validated": [
+      "marginal_bias_power",
+      "position_bias_power",
+      "state_leak_power"
+    ],
+    "prior_attempt_failure": "B201-B206 were queued but all failed as unknown engines before target-data validation."
+  },
+  "decision": {
+    "search_space_exhausted": false,
+    "c30": false,
+    "next_family": "pre_draw_observable_state_leak",
+    "justification": "This class is non-duplicative: it tests whether observable pre-draw state covariates carry chronological OOS information, rather than fitting another fixed RNG seed/family.",
+    "execution_gate": [
+      "Use only variables available before each draw; no post-draw leakage.",
+      "Pre-register a small fixed feature set before scoring.",
+      "Day 1 training/selection only; days 2 and 3 independent OOS.",
+      "Correct for all tested features/models; require stable direction on both OOS days.",
+      "If no pre-draw covariate source is available, record this family as untestable rather than substitute draw-derived proxies."
+    ]
+  },
+  "privacy": "No raw target draws, fingerprints, candidate ranking details, or wagering rationale included."
+}
