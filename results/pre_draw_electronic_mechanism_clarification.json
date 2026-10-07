@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "scope": "pre_draw_source_mechanism_clarification",
+  "source_head": "bd038cb6d821d68c50abc18d7bf514d454068158",
+  "evidence": {
+    "source_type": "official_taiwan_lottery_public_documentation",
+    "source_urls": [
+      "https://www.taiwanlottery.com/run_lottery/schedule/",
+      "https://www.taiwanlottery.com/customer_service/faq/"
+    ],
+    "confirmed": [
+      "BINGO BINGO uses an electronic random draw system and automatic computer draws.",
+      "Lottery outlet TV screens display animations and are separate from the actual electronic draw system.",
+      "Results are generated when ticket sales close; the displayed animation is not the draw."
+    ]
+  },
+  "clarification": {
+    "prior_gate": "results/pre_draw_state_source_audit.json",
+    "excluded_as_inapplicable": "Physical ball-set identifiers and physical ball-draw machine identifiers are not relevant candidate covariates for BINGO BINGO's documented electronic draw mechanism.",
+    "only_possible_reopen_gate": "Independently verifiable, timestamped information available BEFORE each draw that plausibly describes the electronic draw system or its state, and provides sufficient chronological coverage for training and untouched out-of-sample tests.",
+    "not_accepted": [
+      "Physical ball-set hypotheses borrowed from other lottery games",
+      "Post-event draw numbers or result-derived proxies",
+      "Draw-term/time indices alone without independent state evidence",
+      "Post-hoc features lacking verifiable pre-event timestamps"
+    ],
+    "pre_event_source_identified": false,
+    "predictive_evidence_identified": false,
+    "search_space_exhausted_with_current_public_corpus": true,
+    "survivor_count": 0,
+    "targeted_c30": false,
+    "research_branch": "closed_pending_new_pre_event_evidence"
+  },
+  "privacy": "No raw draws, target fingerprints, detailed rankings, or wagering rationale included."
+}
